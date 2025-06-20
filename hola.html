@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculador de Notas PAES</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .prueba-container {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e1e8ff;
+            transition: all 0.3s ease;
+        }
+
+        .prueba-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .prueba-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .prueba-nombre {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .btn-eliminar {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-eliminar:hover {
+            background: #ff3742;
+            transform: scale(1.05);
+        }
+
+        .prueba-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #e1e8ff;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .ponderacion-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .controles {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #333;
+            border: 2px solid #e1e8ff;
+        }
+
+        .btn-secondary:hover {
+            background: #e8eaf6;
+            transform: translateY(-1px);
+        }
+
+        .nem-ranking-container {
+            background: #f0f4ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #d1e7ff;
+        }
+
+        .nem-ranking-container h3 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .nem-ranking-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .nem-input-group, .ranking-input-group {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e1e8ff;
+            transition: all 0.3s ease;
+        }
+
+        .nem-input-group:hover, .ranking-input-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nem-input-group label, .ranking-input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .nem-input-group input, .ranking-input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e8ff;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .nem-input-group input:focus, .ranking-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .ponderacion-display-small {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .objetivo-resultado {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .objetivo-cumplido {
+            background: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+
+        .objetivo-no-cumplido {
+            background: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        .objetivo-resultado h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .diferencia-puntaje {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .resultado {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.3);
+        }
+
+        .resultado h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .puntaje-final {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h3 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        @media (max-width: 768px) {
+            .prueba-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .nem-ranking-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .nem-input-group, .ranking-input-group {
+                padding: 15px;
+            }
+            
+            .controles {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Calculador PAES</h1>
+            <p>Calcula tu puntaje PAES con ponderaciones personalizables</p>
+        </div>
+        
+        <div class="content">
+            <div class="controles">
+                <button class="btn btn-primary" onclick="agregarPrueba()">
+                    ➕ Agregar Prueba
+                </button>
+                <button class="btn btn-secondary" onclick="resetearCalculadora()">
+                    🔄 Resetear
+                </button>
+                <button class="btn btn-secondary" onclick="calcularPuntaje()">
+                    🧮 Calcular
+                </button>
+            </div>
+
+            <!-- Sección NEM y Ranking -->
+            <div class="nem-ranking-container">
+                <h3>📚 NEM y Ranking</h3>
+                <div class="nem-ranking-inputs">
+                    <div class="nem-input-group">
+                        <label for="nem">NEM (Notas Enseñanza Media):</label>
+                        <input type="number" id="nem" min="1" max="7" step="0.1" placeholder="1.0 - 7.0" onchange="calcularPuntaje()">
+                        <label for="ponderacion-nem">Ponderación NEM (%):</label>
+                        <input type="number" id="ponderacion-nem" value="10" min="0" max="100" onchange="calcularPuntaje()">
+                        <div class="ponderacion-display-small">
+                            <span id="display-nem">10% del total</span>
+                        </div>
+                    </div>
+                    <div class="ranking-input-group">
+                        <label for="ranking">Ranking de Notas:</label>
+                        <input type="number" id="ranking" min="1" max="1000" placeholder="1 - 1000" onchange="calcularPuntaje()">
+                        <label for="ponderacion-ranking">Ponderación Ranking (%):</label>
+                        <input type="number" id="ponderacion-ranking" value="10" min="0" max="100" onchange="calcularPuntaje()">
+                        <div class="ponderacion-display-small">
+                            <span id="display-ranking">10% del total</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="puntaje-objetivo">🎯 Puntaje al que aspiras:</label>
+                        <input type="number" id="puntaje-objetivo" min="150" max="1000" placeholder="Ej: 700" onchange="calcularPuntaje()">
+                    </div>
+                </div>
+            </div>
+
+            <div id="pruebas-container">
+                <!-- Las pruebas se generarán dinámicamente -->
+            </div>
+
+            <div id="resultado" class="resultado" style="display: none;">
+                <h2>Tu Puntaje PAES</h2>
+                <div class="puntaje-final" id="puntaje-final">0</div>
+                <p>Puntaje sobre 1000 puntos</p>
+                
+                <!-- Resultado del objetivo -->
+                <div id="objetivo-resultado" class="objetivo-resultado" style="display: none;">
+                    <h4 id="objetivo-titulo">Estado del Objetivo</h4>
+                    <p id="objetivo-mensaje"></p>
+                    <div id="diferencia-puntaje" class="diferencia-puntaje"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar prueba -->
+    <div id="modal-prueba" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h3>Agregar Nueva Prueba</h3>
+            <div class="input-group">
+                <label for="nombre-prueba">Nombre de la Prueba:</label>
+                <input type="text" id="nombre-prueba" placeholder="Ej: Matemática M1">
+            </div>
+            <br>
+            <div class="input-group">
+                <label for="ponderacion-prueba">Ponderación (%):</label>
+                <input type="number" id="ponderacion-prueba" min="1" max="100" placeholder="Ej: 30">
+            </div>
+            <br>
+            <button class="btn btn-primary" onclick="confirmarAgregarPrueba()">Agregar Prueba</button>
+        </div>
+    </div>
+
+    <script>
+        let pruebas = [
+            { id: 1, nombre: "Comprensión Lectora", ponderacion: 20 },
+            { id: 2, nombre: "Matemática M1", ponderacion: 25 },
+            { id: 3, nombre: "Historia y Ciencias Sociales", ponderacion: 20 },
+            { id: 4, nombre: "Ciencias", ponderacion: 25 },
+            { id: 5, nombre: "Matemática M2", ponderacion: 10 }
+        ];
+        let siguienteId = 6;
+
+        function inicializarCalculadora() {
+            renderizarPruebas();
+        }
+
+        function renderizarPruebas() {
+            const container = document.getElementById('pruebas-container');
+            container.innerHTML = '';
+
+            pruebas.forEach(prueba => {
+                const pruebaDiv = document.createElement('div');
+                pruebaDiv.className = 'prueba-container';
+                pruebaDiv.innerHTML = `
+                    <div class="prueba-header">
+                        <span class="prueba-nombre">${prueba.nombre}</span>
+                        <button class="btn-eliminar" onclick="eliminarPrueba(${prueba.id})">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                    <div class="prueba-inputs">
+                        <div class="input-group">
+                            <label>Puntaje Obtenido:</label>
+                            <input type="number" 
+                                   id="puntaje-${prueba.id}" 
+                                   min="150" 
+                                   max="1000" 
+                                   placeholder="150-1000"
+                                   onchange="calcularPuntaje()">
+                        </div>
+                        <div class="input-group">
+                            <label>Ponderación (%):</label>
+                            <input type="number" 
+                                   id="ponderacion-${prueba.id}" 
+                                   value="${prueba.ponderacion}"
+                                   min="1" 
+                                   max="100"
+                                   onchange="actualizarPonderacion(${prueba.id}, this.value); calcularPuntaje()">
+                        </div>
+                        <div class="ponderacion-display">
+                            ${prueba.ponderacion}% del total
+                        </div>
+                    </div>
+                `;
+                container.appendChild(pruebaDiv);
+            });
+
+            actualizarPonderacionesDisplay();
+        }
+
+        function actualizarPonderacion(id, nuevaPonderacion) {
+            const prueba = pruebas.find(p => p.id === id);
+            if (prueba) {
+                prueba.ponderacion = parseInt(nuevaPonderacion);
+                actualizarPonderacionesDisplay();
+            }
+        }
+
+        function actualizarPonderacionesDisplay() {
+            pruebas.forEach(prueba => {
+                const display = document.querySelector(`#ponderacion-${prueba.id}`).parentElement.nextElementSibling;
+                if (display) {
+                    display.textContent = `${prueba.ponderacion}% del total`;
+                }
+            });
+        }
+
+        function agregarPrueba() {
+            document.getElementById('modal-prueba').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-prueba').style.display = 'none';
+            document.getElementById('nombre-prueba').value = '';
+            document.getElementById('ponderacion-prueba').value = '';
+        }
+
+        function confirmarAgregarPrueba() {
+            const nombre = document.getElementById('nombre-prueba').value.trim();
+            const ponderacion = parseInt(document.getElementById('ponderacion-prueba').value);
+
+            if (!nombre || !ponderacion || ponderacion < 1 || ponderacion > 100) {
+                alert('Por favor, ingresa un nombre válido y una ponderación entre 1 y 100%');
+                return;
+            }
+
+            pruebas.push({
+                id: siguienteId++,
+                nombre: nombre,
+                ponderacion: ponderacion
+            });
+
+            renderizarPruebas();
+            cerrarModal();
+            calcularPuntaje();
+        }
+
+        function eliminarPrueba(id) {
+            if (pruebas.length <= 1) {
+                alert('Debe haber al menos una prueba');
+                return;
+            }
+
+            if (confirm('¿Estás seguro de que quieres eliminar esta prueba?')) {
+                pruebas = pruebas.filter(p => p.id !== id);
+                renderizarPruebas();
+                calcularPuntaje();
+            }
+        }
+
+        function calcularPuntaje() {
+            let puntajeTotal = 0;
+            let ponderacionTotal = 0;
+            let pruebasConPuntaje = 0;
+
+            // Calcular puntaje de las pruebas PAES
+            pruebas.forEach(prueba => {
+                const puntajeInput = document.getElementById(`puntaje-${prueba.id}`);
+                const puntaje = parseFloat(puntajeInput.value);
+
+                if (!isNaN(puntaje) && puntaje >= 150 && puntaje <= 1000) {
+                    puntajeTotal += puntaje * (prueba.ponderacion / 100);
+                    ponderacionTotal += prueba.ponderacion;
+                    pruebasConPuntaje++;
+                }
+            });
+
+            // Agregar NEM si está disponible
+            const nem = parseFloat(document.getElementById('nem').value);
+            const ponderacionNEM = parseFloat(document.getElementById('ponderacion-nem').value) || 0;
+            
+            if (!isNaN(nem) && nem >= 1 && nem <= 7 && ponderacionNEM > 0) {
+                // Convertir NEM a puntaje (aproximación: nota 7.0 = ~800 pts, nota 4.0 = ~500 pts)
+                const puntajeNEM = 150 + (nem - 1) * 141.67; // Fórmula aproximada
+                puntajeTotal += puntajeNEM * (ponderacionNEM / 100);
+                ponderacionTotal += ponderacionNEM;
+                
+                // Actualizar display de ponderación NEM
+                document.getElementById('display-nem').textContent = `${ponderacionNEM}% del total`;
+            } else {
+                document.getElementById('display-nem').textContent = '0% del total';
+            }
+            
+            // Agregar Ranking si está disponible
+            const ranking = parseFloat(document.getElementById('ranking').value);
+            const ponderacionRanking = parseFloat(document.getElementById('ponderacion-ranking').value) || 0;
+            
+            if (!isNaN(ranking) && ranking >= 1 && ranking <= 1000 && ponderacionRanking > 0) {
+                // Convertir ranking a puntaje (ranking 1 = ~950 pts, ranking 1000 = ~150 pts)
+                const puntajeRanking = 950 - (ranking - 1) * 0.8; // Fórmula aproximada
+                puntajeTotal += puntajeRanking * (ponderacionRanking / 100);
+                ponderacionTotal += ponderacionRanking;
+                
+                // Actualizar display de ponderación Ranking
+                document.getElementById('display-ranking').textContent = `${ponderacionRanking}% del total`;
+            } else {
+                document.getElementById('display-ranking').textContent = '0% del total';
+            }
+
+            if (pruebasConPuntaje > 0 || (!isNaN(nem) && ponderacionNEM > 0) || (!isNaN(ranking) && ponderacionRanking > 0)) {
+                // Normalizar si las ponderaciones no suman 100%
+                if (ponderacionTotal !== 100 && ponderacionTotal > 0) {
+                    puntajeTotal = (puntajeTotal / ponderacionTotal) * 100;
+                }
+
+                const puntajeFinal = Math.round(puntajeTotal * 10) / 10;
+                document.getElementById('puntaje-final').textContent = puntajeFinal;
+                document.getElementById('resultado').style.display = 'block';
+
+                // Mostrar información de ponderaciones
+                mostrarResumenPonderaciones(ponderacionTotal);
+
+                // Verificar objetivo
+                verificarObjetivo(puntajeFinal);
+
+                // Animación del puntaje
+                animarPuntaje(puntajeFinal);
+            } else {
+                document.getElementById('resultado').style.display = 'none';
+            }
+        }
+
+        function mostrarResumenPonderaciones(total) {
+            const resultado = document.getElementById('resultado');
+            let resumenExistente = document.getElementById('resumen-ponderaciones');
+            
+            if (resumenExistente) {
+                resumenExistente.remove();
+            }
+
+            const resumen = document.createElement('div');
+            resumen.id = 'resumen-ponderaciones';
+            resumen.style.cssText = `
+                background: rgba(255, 255, 255, 0.2);
+                padding: 15px;
+                border-radius: 10px;
+                margin-top: 15px;
+                font-size: 0.9rem;
+            `;
+            
+            if (total !== 100) {
+                resumen.innerHTML = `
+                    <strong>⚠️ Nota:</strong> Ponderaciones actuales suman ${total.toFixed(1)}%<br>
+                    <small>El resultado ha sido normalizado a 100%</small>
+                `;
+            } else {
+                resumen.innerHTML = `
+                    <strong>✅ Perfecto:</strong> Ponderaciones suman exactamente 100%
+                `;
+            }
+            
+            // Insertar antes del objetivo-resultado
+            const objetivoDiv = document.getElementById('objetivo-resultado');
+            resultado.insertBefore(resumen, objetivoDiv);
+        }
+
+        function verificarObjetivo(puntajeFinal) {
+            const puntajeObjetivo = parseFloat(document.getElementById('puntaje-objetivo').value);
+            const objetivoDiv = document.getElementById('objetivo-resultado');
+            const objetivoTitulo = document.getElementById('objetivo-titulo');
+            const objetivoMensaje = document.getElementById('objetivo-mensaje');
+            const diferenciaPuntaje = document.getElementById('diferencia-puntaje');
+
+            if (!isNaN(puntajeObjetivo) && puntajeObjetivo > 0) {
+                objetivoDiv.style.display = 'block';
+                
+                if (puntajeFinal >= puntajeObjetivo) {
+                    // Objetivo cumplido
+                    objetivoDiv.className = 'objetivo-resultado objetivo-cumplido';
+                    objetivoTitulo.textContent = '🎉 ¡Felicitaciones!';
+                    objetivoMensaje.textContent = '¡Alcanzaste tu objetivo! Estás en el camino correcto.';
+                    const diferencia = puntajeFinal - puntajeObjetivo;
+                    diferenciaPuntaje.textContent = `Superaste tu objetivo por ${diferencia.toFixed(1)} puntos`;
+                    diferenciaPuntaje.style.color = '#155724';
+                } else {
+                    // Objetivo no cumplido
+                    objetivoDiv.className = 'objetivo-resultado objetivo-no-cumplido';
+                    objetivoTitulo.textContent = '😔 Lamentablemente...';
+                    objetivoMensaje.textContent = 'No llegas al puntaje que aspiras. ¡Pero no te desanimes, sigue preparándote!';
+                    const diferencia = puntajeObjetivo - puntajeFinal;
+                    diferenciaPuntaje.textContent = `Te faltan ${diferencia.toFixed(1)} puntos para alcanzar tu objetivo`;
+                    diferenciaPuntaje.style.color = '#721c24';
+                }
+            } else {
+                objetivoDiv.style.display = 'none';
+            }
+        }
+
+        function animarPuntaje(puntajeFinal) {
+            const elemento = document.getElementById('puntaje-final');
+            let puntajeActual = 0;
+            const incremento = puntajeFinal / 50;
+            
+            const animacion = setInterval(() => {
+                puntajeActual += incremento;
+                if (puntajeActual >= puntajeFinal) {
+                    puntajeActual = puntajeFinal;
+                    clearInterval(animacion);
+                }
+                elemento.textContent = Math.round(puntajeActual * 10) / 10;
+            }, 20);
+        }
+
+        function resetearCalculadora() {
+            if (confirm('¿Estás seguro de que quieres resetear toda la calculadora?')) {
+                pruebas.forEach(prueba => {
+                    const puntajeInput = document.getElementById(`puntaje-${prueba.id}`);
+                    if (puntajeInput) puntajeInput.value = '';
+                });
+                document.getElementById('nem').value = '';
+                document.getElementById('ranking').value = '';
+                document.getElementById('puntaje-objetivo').value = '';
+                document.getElementById('ponderacion-nem').value = '10';
+                document.getElementById('ponderacion-ranking').value = '10';
+                document.getElementById('display-nem').textContent = '10% del total';
+                document.getElementById('display-ranking').textContent = '10% del total';
+                document.getElementById('resultado').style.display = 'none';
+            }
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-prueba');
+            if (event.target === modal) {
+                cerrarModal();
+            }
+        }
+
+        // Inicializar la calculadora cuando se carga la página
+        document.addEventListener('DOMContentLoaded', inicializarCalculadora);
+    </script>
+</body>
+</html>
